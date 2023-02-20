@@ -144,7 +144,7 @@ class PromptTrainer(Trainer):
     def load_state_dict_from_checkpoint(self, resume_from_checkpoint: os.PathLike = None):
         if resume_from_checkpoint is not None:
             self.template = AutoTemplate.load_from(
-                resume_from_checkpoint, self.tokenizer, self.args.max_seq_length, self._get_model()
+                resume_from_checkpoint, self.tokenizer, self.args.max_seq_length, self._get_model().plm
             )
         super(PromptTrainer, self).load_state_dict_from_checkpoint(resume_from_checkpoint)
 
@@ -198,15 +198,18 @@ class PromptTrainer(Trainer):
                 else:
                     params = plm_parameters
             else:
-                args = self.init_num_steps(self.args, len(self.train_dataset))
+                if self.args.max_steps > 0:
+                    max_steps = self.args.max_steps
+                else:
+                    raise ValueError("Please use `max_steps` to set the maximum training steps.")
                 warmup = (
-                    args.warmup_steps if args.warmup_steps > 0 else int(args.warmup_ratio * args.num_training_steps)
+                    self.args.warmup_steps if self.args.warmup_steps > 0 else int(self.args.warmup_ratio * max_steps)
                 )
                 self.lr_scheduler = get_scheduler(
-                    args.lr_scheduler_type,
+                    self.args.lr_scheduler_type,
                     learning_rate=self.args.ppt_learning_rate,
                     num_warmup_steps=warmup,
-                    num_training_steps=args.num_training_steps,
+                    num_training_steps=max_steps,
                 )
                 lr = self.lr_scheduler
                 params = ppt_parameters

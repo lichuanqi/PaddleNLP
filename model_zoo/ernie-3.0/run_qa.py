@@ -106,6 +106,7 @@ def main():
                 partial(prepare_train_features, tokenizer=tokenizer, args=data_args),
                 batched=True,
                 num_proc=4,
+                batch_size=4,
                 remove_columns=column_names,
                 load_from_cache_file=not data_args.overwrite_cache,
                 desc="Running tokenizer on train dataset",
@@ -118,6 +119,7 @@ def main():
                 partial(prepare_validation_features, tokenizer=tokenizer, args=data_args),
                 batched=True,
                 num_proc=4,
+                batch_size=4,
                 remove_columns=column_names,
                 load_from_cache_file=not data_args.overwrite_cache,
                 desc="Running tokenizer on validation dataset",
@@ -131,6 +133,7 @@ def main():
                 partial(prepare_validation_features, tokenizer=tokenizer, args=data_args),
                 batched=True,
                 num_proc=4,
+                batch_size=4,
                 remove_columns=column_names,
                 load_from_cache_file=not data_args.overwrite_cache,
                 desc="Running tokenizer on prediction dataset",
@@ -214,6 +217,7 @@ def main():
         paddlenlp.transformers.export_model(
             model=trainer.model, input_spec=input_spec, path=model_args.export_model_dir
         )
+        trainer.tokenizer.save_pretrained(model_args.export_model_dir)
 
 
 if __name__ == "__main__":

@@ -129,11 +129,15 @@ Trainer 是一个简单，但功能完整的 Paddle训练和评估模块，并�
         The dataset to use for training. If it is an `datasets.Dataset`, columns not accepted by the
         `model.forward()` method are automatically removed.
 
-    eval_dataset（`paddle.io.Dataset`，可选）：
+    eval_dataset（`paddle.io.Dataset` 或 `Dict[str, paddle.io.Dataset]`，可选）：
         用于评估的数据集。如果是 `datasets.Dataset`，那么
         `model.forward()` 不需要的输入字段会被自动删除。
+        如果它是一个字典，则将对字典中每个数据集进行评估，
+        并将字典中的键添加到评估指标名称前。
 
-        The dataset to use for evaluation.
+        The dataset to use for evaluation. If it is a [`~datasets.Dataset`], columns not accepted by the
+        `model.forward()` method are automatically removed. If it is a dictionary, it will evaluate on each
+        dataset prepending the dictionary key to the metric name.
 
     tokenizer（[`PretrainedTokenizer`]，可选）：
         用于数据预处理的tokenizer。如果传入，将用于自动Pad输入
@@ -548,10 +552,15 @@ Trainer 是一个简单，但功能完整的 Paddle训练和评估模块，并�
                         是否从断点重启恢复训练，(可选，默认为 None)
                         The path to a folder with a valid checkpoint for your
                         model. (default: None)
-                        
+
   --skip_memory_metrics
                        是否跳过内存profiler检测。（可选，默认为True，跳过）
                        Whether or not to skip adding of memory profiler reports
                        to metrics.(default:True)
+
+  --flatten_param_grads
+                       是否在优化器中使用flatten_param_grads策略，该策略将素有参数摊平后输入Optimizer更新。目前该策略仅在NPU设备上生效。（可选，默认为False）
+                       Whether use flatten_param_grads method in optimizer,
+                       only used on NPU devices.(default:False)
 
 ```

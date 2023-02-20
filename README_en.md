@@ -1,4 +1,4 @@
-[简体中文🀄](./README_cn.md) |  **English**🌎
+[简体中文🀄](./README.md) |  **English**🌎
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/1371212/175816733-8ec25eb0-9af3-4380-9218-27c154518258.png" align="middle"  width="500" />
@@ -263,7 +263,7 @@ For more super large-scale model pre-training details please refer to [GPT-3](./
 ### Prerequisites
 
 * python >= 3.7
-* paddlepaddle >= 2.2
+* paddlepaddle >= 2.3
 
 More information about PaddlePaddle installation please refer to [PaddlePaddle's Website](https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/conda/linux-conda.html).
 
@@ -276,7 +276,7 @@ pip install --upgrade paddlenlp
 or you can install the latest develop branch code with the following command:
 
 ```shell
-pip install paddlenlp -f https://www.paddlepaddle.org.cn/whl/paddlenlp.html
+pip install --pre --upgrade paddlenlp -f https://www.paddlepaddle.org.cn/whl/paddlenlp.html
 ```
 
 ## Quick Start
@@ -331,7 +331,7 @@ To connect with other users and contributors, welcome to join our [Slack channel
 Scan the QR code below with your Wechat⬇️. You can access to official technical exchange group. Look forward to your participation.
 
 <div align="center">
-<img src="https://user-images.githubusercontent.com/11793384/200770385-a2c02093-0e1d-4189-b324-8b0251cba316.jpg" width="150" height="150" />
+<img src="https://user-images.githubusercontent.com/11793384/212060369-4642d16e-f0ad-4359-aa57-b8303042f9c1.jpg" width="150" height="150" />
 </div>
 
 

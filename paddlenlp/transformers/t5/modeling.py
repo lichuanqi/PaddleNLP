@@ -23,9 +23,16 @@ import paddle
 import paddle.nn as nn
 import paddle.nn.functional as F
 from paddle import Tensor
+
+try:
+    from paddle.amp.auto_cast import amp_state
+except ImportError:
+    from paddle.fluid.dygraph.amp.auto_cast import amp_state
 from paddle.distributed.fleet.utils import recompute
 
+from ...utils.converter import StateDictNameMapping
 from ...utils.log import logger
+from ..activations import ACT2FN
 from ..model_outputs import (
     BaseModelOutput,
     BaseModelOutputWithPastAndCrossAttentions,
@@ -34,7 +41,6 @@ from ..model_outputs import (
     convert_encoder_output,
 )
 from ..model_utils import PretrainedModel, register_base_model
-from ..nezha.modeling import ACT2FN
 from .configuration import (
     T5_PRETRAINED_INIT_CONFIGURATION,
     T5_PRETRAINED_RESOURCE_FILES_MAP,
@@ -89,7 +95,7 @@ class T5LayerNorm(nn.Layer):
         hidden_states = hidden_states * paddle.rsqrt(variance + self.variance_epsilon)
 
         # convert into float16 if necessary
-        if self.weight.dtype == paddle.float16:
+        if amp_state() or self.weight.dtype == paddle.float16:
             hidden_states = hidden_states.astype(paddle.float16)
         return self.weight * hidden_states
 
@@ -501,7 +507,7 @@ class T5Block(nn.Layer):
         attention_outputs = self_attention_outputs[2:]  # Keep self-attention outputs and relative position weights
 
         # clamp inf values to enable fp16 training
-        if hidden_states.dtype == paddle.float16 and paddle.isinf(hidden_states).any():
+        if (amp_state() or hidden_states.dtype == paddle.float16) and paddle.isinf(hidden_states).any():
             # TODO finfo
             clamp_value = finfo(hidden_states.dtype).max - 1000
             hidden_states = paddle.clip(hidden_states, min=-clamp_value, max=clamp_value)
@@ -528,7 +534,7 @@ class T5Block(nn.Layer):
             hidden_states = cross_attention_outputs[0]
 
             # clamp inf values to enable fp16 training
-            if hidden_states.dtype == paddle.float16 and paddle.isinf(hidden_states).any():
+            if (amp_state() or hidden_states.dtype == paddle.float16) and paddle.isinf(hidden_states).any():
                 clamp_value = finfo(hidden_states.dtype).max - 1000
                 hidden_states = paddle.clip(hidden_states, min=-clamp_value, max=clamp_value)
 
@@ -543,7 +549,7 @@ class T5Block(nn.Layer):
         hidden_states = self.layer[-1](hidden_states)
 
         # clamp inf values to enable fp16 training
-        if hidden_states.dtype == paddle.float16 and paddle.isinf(hidden_states).any():
+        if (amp_state() or hidden_states.dtype == paddle.float16) and paddle.isinf(hidden_states).any():
             clamp_value = finfo(hidden_states.dtype).max - 1000
             hidden_states = paddle.clip(hidden_states, min=-clamp_value, max=clamp_value)
 
@@ -570,6 +576,123 @@ class T5PretrainedModel(PretrainedModel):
 
     pretrained_init_configuration = T5_PRETRAINED_INIT_CONFIGURATION
     pretrained_resource_files_map = T5_PRETRAINED_RESOURCE_FILES_MAP
+
+    @classmethod
+    def _get_name_mappings(cls, config: T5Config) -> list[StateDictNameMapping]:
+        mappings: list[StateDictNameMapping] = []
+        model_mappings = [
+            ["shared.weight", "shared.weight"],
+            ["encoder.embed_tokens.weight", "encoder.embed_tokens.weight"],
+            ["encoder.final_layer_norm.weight", "encoder.final_layer_norm.weight"],
+            ["decoder.embed_tokens.weight", "decoder.embed_tokens.weight"],
+            ["decoder.final_layer_norm.weight", "decoder.final_layer_norm.weight"],
+            [
+                "encoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight",
+                "encoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight",
+            ],
+            [
+                "decoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight",
+                "decoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight",
+            ],
+        ]
+        for layer_index in range(config.num_hidden_layers):
+            for att_head in ["q", "k", "v", "o"]:
+                model_mappings.extend(
+                    [
+                        [
+                            f"encoder.block.{layer_index}.layer.0.SelfAttention.{att_head}.weight",
+                            f"encoder.block.{layer_index}.layer.0.SelfAttention.{att_head}.weight",
+                            "transpose",
+                        ],
+                        [
+                            f"decoder.block.{layer_index}.layer.0.SelfAttention.{att_head}.weight",
+                            f"decoder.block.{layer_index}.layer.0.SelfAttention.{att_head}.weight",
+                            "transpose",
+                        ],
+                        [
+                            f"decoder.block.{layer_index}.layer.1.EncDecAttention.{att_head}.weight",
+                            f"decoder.block.{layer_index}.layer.1.EncDecAttention.{att_head}.weight",
+                            "transpose",
+                        ],
+                    ]
+                )
+
+            layer_mappings = [
+                [
+                    f"encoder.block.{layer_index}.layer.1.DenseReluDense.wo.weight",
+                    f"encoder.block.{layer_index}.layer.1.DenseReluDense.wo.weight",
+                    "transpose",
+                ],
+                [
+                    f"decoder.block.{layer_index}.layer.2.DenseReluDense.wo.weight",
+                    f"decoder.block.{layer_index}.layer.2.DenseReluDense.wo.weight",
+                    "transpose",
+                ],
+                [
+                    f"encoder.block.{layer_index}.layer.0.layer_norm.weight",
+                    f"encoder.block.{layer_index}.layer.0.layer_norm.weight",
+                ],
+                [
+                    f"encoder.block.{layer_index}.layer.1.layer_norm.weight",
+                    f"encoder.block.{layer_index}.layer.1.layer_norm.weight",
+                ],
+                [
+                    f"decoder.block.{layer_index}.layer.0.layer_norm.weight",
+                    f"decoder.block.{layer_index}.layer.0.layer_norm.weight",
+                ],
+                [
+                    f"decoder.block.{layer_index}.layer.1.layer_norm.weight",
+                    f"decoder.block.{layer_index}.layer.1.layer_norm.weight",
+                ],
+                [
+                    f"decoder.block.{layer_index}.layer.2.layer_norm.weight",
+                    f"decoder.block.{layer_index}.layer.2.layer_norm.weight",
+                ],
+            ]
+
+            if config.feed_forward_proj == "relu":
+                layer_mappings.extend(
+                    [
+                        [
+                            f"encoder.block.{layer_index}.layer.1.DenseReluDense.wi.weight",
+                            f"encoder.block.{layer_index}.layer.1.DenseReluDense.wi.weight",
+                            "transpose",
+                        ],
+                        [
+                            f"decoder.block.{layer_index}.layer.2.DenseReluDense.wi.weight",
+                            f"decoder.block.{layer_index}.layer.2.DenseReluDense.wi.weight",
+                            "transpose",
+                        ],
+                    ]
+                )
+            elif config.feed_forward_proj == "gated-gelu":
+                for i in range(2):
+                    layer_mappings.extend(
+                        [
+                            [
+                                f"encoder.block.{layer_index}.layer.1.DenseReluDense.wi_{i}.weight",
+                                f"encoder.block.{layer_index}.layer.1.DenseReluDense.wi_{i}.weight",
+                                "transpose",
+                            ],
+                            [
+                                f"decoder.block.{layer_index}.layer.2.DenseReluDense.wi_{i}.weight",
+                                f"decoder.block.{layer_index}.layer.2.DenseReluDense.wi_{i}.weight",
+                                "transpose",
+                            ],
+                        ]
+                    )
+
+            model_mappings.extend(layer_mappings)
+
+        if cls.__name__ != "T5Model":
+            for mapping in model_mappings:
+                mapping[1] = "t5." + mapping[1]
+
+        if config.architectures is not None and "T5ForConditionalGeneration" in config.architectures:
+            model_mappings.append(["lm_head.weight", "lm_head.weight", "transpose"])
+
+        mappings = [StateDictNameMapping(*mapping) for mapping in model_mappings]
+        return mappings
 
     @property
     def dummy_inputs(self):
@@ -705,9 +828,9 @@ class T5PretrainedModel(PretrainedModel):
         return shifted_input_ids
 
 
-class T5Stack(nn.Layer):
+class T5Stack(T5PretrainedModel):
     def __init__(self, config: T5Config, embed_tokens: Optional[nn.Embedding] = None):
-        super().__init__()
+        super().__init__(config)
         self.is_decoder = config.is_decoder
         self.embed_tokens = embed_tokens
         self.block = nn.LayerList(
@@ -997,7 +1120,7 @@ class T5Stack(nn.Layer):
             encoder_extended_attention_mask = encoder_attention_mask.unsqueeze([1, 2])
         encoder_extended_attention_mask = encoder_extended_attention_mask.astype(self.dtype)  # fp16 compatibility
 
-        if self.dtype == paddle.float16:
+        if amp_state() or self.dtype == paddle.float16:
             encoder_extended_attention_mask = (1.0 - encoder_extended_attention_mask) * -1e4
         elif self.dtype == paddle.float32:
             encoder_extended_attention_mask = (1.0 - encoder_extended_attention_mask) * -1e4

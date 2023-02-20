@@ -54,8 +54,186 @@ class ZeroShotTextClassificationTask(Task):
         "special_tokens_map": "special_tokens_map.json",
         "tokenizer_config": "tokenizer_config.json",
     }
+    resource_files_urls = {
+        "utc-xbase": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-xbase/model_state.pdparams",
+                "e751c3a78d4caff923759c0d0547bfe6",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-xbase/config.json",
+                "4c2b035c71ff226a14236171a1a202a4",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-xbase/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-xbase/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-xbase/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-base": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-base/model_state.pdparams",
+                "72089351c6fb02bcf8f270fe0cc508e9",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-base/config.json",
+                "79aa9a69286604436937b03f429f4d34",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-base/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-base/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-base/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-medium": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-medium/model_state.pdparams",
+                "2802c766a8b880aad910dd5a7db809ae",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-medium/config.json",
+                "2899cd7c8590dcdc4223e4b1262e2f4e",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-medium/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-medium/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-medium/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-micro": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-micro/model_state.pdparams",
+                "d9ebdfce9a8c6ebda43630ed18b07c58",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-micro/config.json",
+                "8c8da9337e09e0c3962196987dca18bd",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-micro/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-micro/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-micro/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-mini": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-mini/model_state.pdparams",
+                "848a2870cd51bfc22174a2a38884085c",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-mini/config.json",
+                "933b8ebfcf995b1f965764ac426a2ffa",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-mini/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-mini/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-mini/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-nano": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-nano/model_state.pdparams",
+                "2bd31212d989619148eda3afebc7354d",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-nano/config.json",
+                "02fe311fdcc127e56ff0975038cc4d65",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-nano/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-nano/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-nano/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-pico": {
+            "model_state": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-pico/model_state.pdparams",
+                "f7068d63ad2930de7ac850d475052946",
+            ],
+            "config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-pico/config.json",
+                "c0c7412cdd070edb5a1ce70c7fc68ad3",
+            ],
+            "vocab_file": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-pico/vocab.txt",
+                "97eb0ec5a5890c8190e10e251af2e133",
+            ],
+            "special_tokens_map": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-pico/special_tokens_map.json",
+                "8b3fb1023167bb4ab9d70708eb05f6ec",
+            ],
+            "tokenizer_config": [
+                "https://paddlenlp.bj.bcebos.com/taskflow/zero_shot_text_classification/utc-pico/tokenizer_config.json",
+                "be86466f6769fde498690269d099ea7c",
+            ],
+        },
+        "utc-large": {
+            "model_state": [
+                "https://bj.bcebos.com/paddlenlp/taskflow/zero_shot_text_classification/utc-large/model_state.pdparams",
+                "71eb9a732c743a513b84ca048dc4945b",
+            ],
+            "config": [
+                "https://bj.bcebos.com/paddlenlp/taskflow/zero_shot_text_classification/utc-large/config.json",
+                "9496be2cc99f7e6adf29280320274142",
+            ],
+            "vocab_file": [
+                "https://bj.bcebos.com/paddlenlp/taskflow/zero_text_classification/utc-large/vocab.txt",
+                "afc01b5680a53525df5afd7518b42b48",
+            ],
+            "special_tokens_map": [
+                "https://bj.bcebos.com/paddlenlp/taskflow/zero_text_classification/utc-large/special_tokens_map.json",
+                "2458e2131219fc1f84a6e4843ae07008",
+            ],
+            "tokenizer_config": [
+                "https://bj.bcebos.com/paddlenlp/taskflow/zero_text_classification/utc-large/tokenizer_config.json",
+                "dcb0f3257830c0eb1f2de47f2d86f89a",
+            ],
+        },
+    }
 
-    def __init__(self, task: str, model: str = "utc-large", schema: list = None, **kwargs):
+    def __init__(self, task: str, model: str, schema: list = None, **kwargs):
         super().__init__(task=task, model=model, **kwargs)
 
         self._set_utc_schema(schema)
@@ -64,6 +242,7 @@ class ZeroShotTextClassificationTask(Task):
         self._pred_threshold = kwargs.get("pred_threshold", 0.5)
         self._num_workers = kwargs.get("num_workers", 0)
 
+        self._check_task_files()
         self._construct_tokenizer()
         self._check_predictor_type()
         self._get_inference_model()
@@ -102,10 +281,7 @@ class ZeroShotTextClassificationTask(Task):
         """
         Construct the inference model for the predictor.
         """
-        if self.from_hf_hub:
-            model_instance = UTC.from_pretrained(self._task_path, from_hf_hub=self.from_hf_hub)
-        else:
-            model_instance = UTC.from_pretrained(model)
+        model_instance = UTC.from_pretrained(self._task_path, from_hf_hub=self.from_hf_hub)
         self._model = model_instance
         self._model.eval()
 
