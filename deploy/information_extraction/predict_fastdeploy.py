@@ -25,7 +25,8 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--model_dir",
-        required=True,
+        # required=True,
+        default='deploy/information_extraction/20230221-checkpoint-10000',
         help="The directory of model, params and vocab file.")
     parser.add_argument(
         "--device",
