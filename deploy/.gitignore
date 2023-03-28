@@ -1,6 +1,6 @@
-deploy/information_extraction/data/
-deploy/information_extraction/exps/
-deploy/information_extraction/log/
+information_extraction/data/
+information_extraction/exps/
+information_extraction/log/
 
 *.txt
 *.json
