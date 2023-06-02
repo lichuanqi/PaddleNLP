@@ -1,6 +1,7 @@
 information_extraction/data/
 information_extraction/exps/
 information_extraction/log/
+information_extraction/checkpoint/
 
 *.txt
 *.json
